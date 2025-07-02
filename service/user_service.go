@@ -85,7 +85,7 @@ func (s *UserService) DeleteUser(id string) error {
 //
 // 반환 값:
 //   - *User: 인증된 사용자 정보
-//   - string: 인증 성공 시 발급되는 토큰 문자열 (현재는 mock 값)
+//   - string: 인증 성공 시 발급되는 토큰 문자열
 //   - error: 인증 실패 시 오류 메시지 반환
 func (s *UserService) Authenticate(email, password string) (*model.User, string, error) {
 	user, err := s.Repo.FindByEmail(email)
