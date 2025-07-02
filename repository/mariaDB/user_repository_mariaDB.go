@@ -42,5 +42,5 @@ func (r *MariaDBUserRepository) Update(user *model.User) (*model.User, error) {
 
 func (r *MariaDBUserRepository) Delete(id string) error {
 	// ToDO: SQL Injection 여부 확인 필요
-	return r.DB.Delete(&model.User{}, "userId = ?", id).Error
+	return r.DB.Delete(&model.User{}, "userID = ?", id).Error
 }
