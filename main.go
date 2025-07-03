@@ -5,10 +5,13 @@ import (
 	"os"
 
 	"github.com/B-Bridger/server/database"
+	_ "github.com/B-Bridger/server/docs"
 	"github.com/B-Bridger/server/handler"
 	"github.com/B-Bridger/server/model"
 	"github.com/B-Bridger/server/repository/mariaDB"
 	"github.com/B-Bridger/server/service"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -24,6 +27,7 @@ func main() {
 	userHandler := &handler.UserHandler{Service: userService}
 
 	r := SetupRouter(userHandler)
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
