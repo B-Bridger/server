@@ -41,7 +41,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 // @Tags 사용자
 // @Accept json
 // @Produce json
-// @Param user body model.User true "사용자 정보"
+// @Param user body model.CreateUserModel true "사용자 정보"
 // @Success 201 {object} model.UserResponse
 // @Failure 400 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
