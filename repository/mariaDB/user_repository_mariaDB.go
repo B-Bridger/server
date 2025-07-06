@@ -44,3 +44,10 @@ func (r *MariaDBUserRepository) Delete(id string) error {
 	// ToDO: SQL Injection 여부 확인 필요
 	return r.DB.Delete(&model.User{}, "userID = ?", id).Error
 }
+
+func (r *MariaDBUserRepository) UpdateProfileImage(userID string, imageURL string) error {
+	return r.DB.Model(&model.User{}).
+		Where("userID = ?", userID).
+		Update("profile", imageURL).
+		Error
+}

@@ -52,4 +52,14 @@ type UserRepository interface {
 	// 반환 값
 	//   - error: 실패 시 error 메세지
 	Delete(id string) error
+
+	// 사용자의 프로필 이미지 경로를 저장합니다.
+	//
+	// 매개 변수
+	// 	 - id: 사용자의 고유 ID
+	// 	 - imageUrl: 이미지 경로
+	//
+	// 반환 값
+	//   - error: 실패 시 error 메세지
+	UpdateProfileImage(id string, imageURL string) error
 }

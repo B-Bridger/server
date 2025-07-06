@@ -15,6 +15,7 @@ type User struct {
 	// TODO: Company 테이블 여부 회의 필요
 	// CompanyID string    `gorm:"column:companyId" json:"companyId"`
 	Language  string    `gorm:"column:language" json:"language"`
+	Profile   string    `gorm:"column:profile" json:"profile"`
 	CreatedAt time.Time `gorm:"column:createdAt;autoCreateTime" json:"createdAt"`
 	FcmToken  string    `gorm:"column:fcmToken" json:"fcmToken"`
 }

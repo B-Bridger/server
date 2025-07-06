@@ -79,11 +79,11 @@ func (s *UserService) DeleteUser(id string) error {
 // Authenticate는 주어진 이메일과 비밀번호를 검증하여 로그인 인증을 수행합니다.
 // 비밀번호는 bcrypt로 비교되며, 인증에 성공하면 사용자 정보와 토큰을 반환합니다.
 //
-// 매개 변수:
+// 매개 변수
 //   - email: 사용자의 이메일 주소
 //   - password: 사용자의 비밀번호 (평문)
 //
-// 반환 값:
+// 반환 값
 //   - *User: 인증된 사용자 정보
 //   - string: 인증 성공 시 발급되는 토큰 문자열
 //   - error: 인증 실패 시 오류 메시지 반환
@@ -116,7 +116,14 @@ func (s *UserService) Authenticate(email, password string) (*model.User, string,
 	return user, tokenString, nil
 }
 
-// CheckUserField는
+// CheckUserField는 사용자의 Unique 필드가 이미 존재하는지 확인합니다.
+//
+// 매개변수
+//   - userID: 사용자의 고유 아이디
+//   - email: 사용자의 이메일 주소
+//
+// 반환 값
+//   - error: 데이터가 이미 존재할 경우, 반환되는 오류 메세지
 func (s *UserService) CheckUserField(userID, email string) error {
 	if findUser, _ := s.Repo.FindByID(userID); findUser != nil {
 		return errors.New("userID가 이미 존재합니다")
@@ -126,4 +133,16 @@ func (s *UserService) CheckUserField(userID, email string) error {
 	}
 
 	return nil
+}
+
+// UpdateProfileImage는 사용자의 프로필 이미지를 업데이트 합니다.
+//
+// 매개 변수
+//   - id: 사용자의 고유 ID
+//   - imageUrl: 이미지 경로
+//
+// 반환 값
+//   - error: 실패 시 error 메세지
+func (s *UserService) UpdateProfileImage(userID string, imageURL string) error {
+	return s.Repo.UpdateProfileImage(userID, imageURL)
 }

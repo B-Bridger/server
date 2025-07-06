@@ -14,9 +14,11 @@ func SetupRouter(userHandler *handler.UserHandler) *gin.Engine {
 		user.POST("/", userHandler.CreateUser)
 		user.PUT("/:id", userHandler.UpdateUser)
 		user.DELETE("/:id", userHandler.DeleteUser)
+		user.POST("/:id/profile-image", userHandler.UploadProfileImage)
 	}
 
 	r.POST("/login", userHandler.Login)
+	r.Static("/static", "./static")
 
 	return r
 }

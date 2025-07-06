@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/B-Bridger/server/model"
@@ -146,4 +147,42 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, model.TokenResponse{Message: "로그인에 성공하였습니다", Status: 200, User: *user, Token: token})
+}
+
+// UploadProfileImage godoc
+// @Summary 프로필 이미지 업로드
+// @Description 사용자의 프로필 이미지를 업로드하고 경로를 DB에 저장합니다.
+// @Tags 사용자
+// @Accept multipart/form-data
+// @Produce json
+// @Param id path string true "사용자 ID"
+// @Param image formData file true "업로드할 이미지 파일"
+// @Success 200 {object} model.OKResponse
+// @Failure 400 {object} model.ErrorResponse
+// @Failure 500 {object} model.ErrorResponse
+// @Router /users/{id}/profile-image [post]
+func (h *UserHandler) UploadProfileImage(c *gin.Context) {
+	userID := c.Param("id")
+
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "이미지 파일이 없습니다", Detail: err.Error(), Status: 400})
+		return
+	}
+
+	filename := fmt.Sprintf("%s_%s", userID, file.Filename)
+	savePath := "static/uploads/" + filename
+
+	if err := c.SaveUploadedFile(file, savePath); err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Message: "이미지 저장에 실패하였습니다", Detail: err.Error(), Status: 500})
+		return
+	}
+
+	imageURL := "/static/uploads/" + filename
+	if err := h.Service.UpdateProfileImage(userID, imageURL); err != nil {
+		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Message: "이미지 저장에 실패하였습니다", Detail: err.Error(), Status: 500})
+		return
+	}
+
+	c.JSON(http.StatusOK, model.OKResponse{Message: "이미지를 성공적으로 저장하였습니다", Status: 200})
 }
