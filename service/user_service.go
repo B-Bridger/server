@@ -99,11 +99,11 @@ func (s *UserService) Authenticate(email, password string) (*model.User, string,
 
 	jwtSecret := os.Getenv("SECRET")
 	if jwtSecret == "" {
-		return nil, "", errors.New(".env 파일에 JWT 비밀 키가 설정되지 않았습니다 (SECRET)")
+		return nil, "", errors.New("JWT 비밀 키가 설정되지 않았습니다")
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userId": user.UserID,
+		"userID": user.UserID,
 		"email":  user.Email,
 		"exp":    time.Now().Add(time.Hour * 24).Unix(),
 	})
@@ -114,4 +114,16 @@ func (s *UserService) Authenticate(email, password string) (*model.User, string,
 	}
 
 	return user, tokenString, nil
+}
+
+// CheckUserField는
+func (s *UserService) CheckUserField(userID, email string) error {
+	if findUser, _ := s.Repo.FindByID(userID); findUser != nil {
+		return errors.New("userID가 이미 존재합니다")
+	}
+	if findUser, _ := s.Repo.FindByEmail(email); findUser != nil {
+		return errors.New("email이 이미 존재합니다")
+	}
+
+	return nil
 }

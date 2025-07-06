@@ -44,21 +44,34 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 // @Param user body model.CreateUserModel true "사용자 정보"
 // @Success 201 {object} model.UserResponse
 // @Failure 400 {object} model.ErrorResponse
+// @Failure 409 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Router /users [post]
 func (h *UserHandler) CreateUser(c *gin.Context) {
-	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req model.CreateUserModel
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "요청 형식이 잘못되었습니다", Detail: err.Error(), Status: 400})
 		return
 	}
 
-	if err := h.Service.CreateUser(&user); err != nil {
+	user := &model.User{
+		Name:     req.Name,
+		Email:    req.Email,
+		Language: req.Language,
+		Password: req.Password,
+	}
+
+	if err := h.Service.CheckUserField(user.UserID, user.Email); err != nil {
+		c.JSON(http.StatusConflict, model.ErrorResponse{Message: "해당 사용자가 이미 존재합니다", Detail: err.Error(), Status: 409})
+		return
+	}
+
+	if err := h.Service.CreateUser(user); err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Message: "사용자 생성에 실패하였습니다", Detail: err.Error(), Status: 500})
 		return
 	}
 
-	c.JSON(http.StatusCreated, model.UserResponse{Message: "사용자를 성공적으로 생성하였습니다", Status: 201, User: user})
+	c.JSON(http.StatusCreated, model.UserResponse{Message: "사용자를 성공적으로 생성하였습니다", Status: 201, User: *user})
 }
 
 // UpdateUser godoc
