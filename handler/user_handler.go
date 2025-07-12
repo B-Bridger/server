@@ -20,12 +20,12 @@ type LoginRequest struct {
 
 // GetUser godoc
 // @Summary 사용자 정보 조회
-// @Description ID로 사용자 정보를 가져옵니다.
+// @Description JWT 토큰에 포함된 사용자 정보를 가져옵니다.
 // @Tags 사용자
-// @Param id path string true "사용자 ID"
+// @Security BearerAuth
 // @Success 200 {object} model.UserResponse
 // @Failure 404 {object} model.ErrorResponse
-// @Router /users/{id} [get]
+// @Router /users [get]
 func (h *UserHandler) GetUser(c *gin.Context) {
 	id := c.MustGet("userID").(string)
 	user, err := h.Service.GetUser(id)
@@ -77,16 +77,16 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 
 // UpdateUser godoc
 // @Summary 사용자 정보 수정
-// @Description 기존 사용자의 정보를 수정합니다.
+// @Description JWT 토큰 기반으로 현재 사용자 정보를 수정합니다.
 // @Tags 사용자
 // @Accept json
 // @Produce json
-// @Param id path string true "사용자 ID"
+// @Security BearerAuth
 // @Param user body model.User true "수정할 사용자 정보"
 // @Success 200 {object} model.User
 // @Failure 400 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
-// @Router /users/{id} [put]
+// @Router /users [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
 	id := c.MustGet("userID").(string)
 	var user model.User
@@ -107,12 +107,12 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 // DeleteUser godoc
 // @Summary 사용자 삭제
-// @Description ID를 기반으로 사용자를 삭제합니다.
+// @Description JWT 토큰 기반으로 현재 사용자를 삭제합니다.
 // @Tags 사용자
-// @Param id path string true "사용자 ID"
+// @Security BearerAuth
 // @Success 200 {object} model.OKResponse
 // @Failure 500 {object} model.ErrorResponse
-// @Router /users/{id} [delete]
+// @Router /users [delete]
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	id := c.MustGet("userID").(string)
 	if err := h.Service.DeleteUser(id); err != nil {
@@ -128,6 +128,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 // @Tags 인증
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param credentials body LoginRequest true "로그인 정보"
 // @Success 200 {object} model.TokenResponse
 // @Failure 400 {object} model.ErrorResponse
@@ -151,18 +152,18 @@ func (h *UserHandler) Login(c *gin.Context) {
 
 // UploadProfileImage godoc
 // @Summary 프로필 이미지 업로드
-// @Description 사용자의 프로필 이미지를 업로드하고 경로를 DB에 저장합니다.
+// @Description JWT 토큰에 기반한 사용자의 프로필 이미지를 업로드하고 경로를 DB에 저장합니다.
 // @Tags 사용자
 // @Accept multipart/form-data
 // @Produce json
-// @Param id path string true "사용자 ID"
 // @Param image formData file true "업로드할 이미지 파일"
+// @Security BearerAuth
 // @Success 200 {object} model.OKResponse
 // @Failure 400 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
-// @Router /users/{id}/profile-image [post]
+// @Router /users/profile-image [post]
 func (h *UserHandler) UploadProfileImage(c *gin.Context) {
-	userID := c.Param("id")
+	id := c.MustGet("userID").(string)
 
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -170,7 +171,7 @@ func (h *UserHandler) UploadProfileImage(c *gin.Context) {
 		return
 	}
 
-	filename := fmt.Sprintf("%s_%s", userID, file.Filename)
+	filename := fmt.Sprintf("%s_%s", id, file.Filename)
 	savePath := "static/uploads/" + filename
 
 	if err := c.SaveUploadedFile(file, savePath); err != nil {
@@ -179,7 +180,7 @@ func (h *UserHandler) UploadProfileImage(c *gin.Context) {
 	}
 
 	imageURL := "/static/uploads/" + filename
-	if err := h.Service.UpdateProfileImage(userID, imageURL); err != nil {
+	if err := h.Service.UpdateProfileImage(id, imageURL); err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Message: "이미지 저장에 실패하였습니다", Detail: err.Error(), Status: 500})
 		return
 	}

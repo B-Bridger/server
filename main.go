@@ -1,5 +1,17 @@
 package main
 
+// @title B-Bridger API 문서
+// @version 1.0
+// @description B2B 통신 플랫폼을 위한 백엔드 API
+// @host localhost:8080
+// @BasePath /
+// @schemes http
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description JWT Authorization header using the Bearer scheme. Example: "Bearer {token}"
+
 import (
 	"log"
 	"os"
