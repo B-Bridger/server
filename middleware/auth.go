@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/B-Bridger/server/model"
@@ -26,7 +27,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		auth := strings.TrimSpace(splitToken[1])
 
 		token, err := jwt.ParseWithClaims(auth, &model.BridgerClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte("AccessToken"), nil
+			return []byte(os.Getenv("SECRET")), nil
 		})
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusForbidden, model.ErrorResponse{Message: "접근 권한이 없습니다", Detail: err.Error(), Status: 403})
