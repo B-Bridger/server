@@ -2,19 +2,24 @@ package main
 
 import (
 	"github.com/B-Bridger/server/handler"
+	"github.com/B-Bridger/server/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(userHandler *handler.UserHandler) *gin.Engine {
 	r := gin.Default()
 
+	authRequired := r.Group("/users", middleware.AuthMiddleware())
+	{
+		authRequired.GET("/", userHandler.GetUser)
+		authRequired.PUT("/", userHandler.UpdateUser)
+		authRequired.DELETE("/", userHandler.DeleteUser)
+		authRequired.POST("/profile-image", userHandler.UploadProfileImage)
+	}
+
 	user := r.Group("/users")
 	{
-		user.GET("/:id", userHandler.GetUser)
 		user.POST("/", userHandler.CreateUser)
-		user.PUT("/:id", userHandler.UpdateUser)
-		user.DELETE("/:id", userHandler.DeleteUser)
-		user.POST("/:id/profile-image", userHandler.UploadProfileImage)
 	}
 
 	r.POST("/login", userHandler.Login)

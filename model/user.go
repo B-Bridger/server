@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -25,6 +26,11 @@ type CreateUserModel struct {
 	Name     string `gorm:"column:name" json:"name"`
 	Email    string `gorm:"column:email" json:"email"`
 	Language string `gorm:"column:language" json:"language"`
+}
+
+type BridgerClaims struct {
+	UserID string `json:"userID"`
+	jwt.RegisteredClaims
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {

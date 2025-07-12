@@ -27,7 +27,7 @@ type LoginRequest struct {
 // @Failure 404 {object} model.ErrorResponse
 // @Router /users/{id} [get]
 func (h *UserHandler) GetUser(c *gin.Context) {
-	id := c.Param("id")
+	id := c.MustGet("userID").(string)
 	user, err := h.Service.GetUser(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, model.ErrorResponse{Message: "사용자를 찾을 수 없습니다", Detail: err.Error(), Status: 404})
@@ -88,7 +88,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 // @Failure 500 {object} model.ErrorResponse
 // @Router /users/{id} [put]
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	id := c.Param("id")
+	id := c.MustGet("userID").(string)
 	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, model.ErrorResponse{Message: "요청 형식이 잘못되었습니다", Detail: err.Error(), Status: 400})
@@ -114,7 +114,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 // @Failure 500 {object} model.ErrorResponse
 // @Router /users/{id} [delete]
 func (h *UserHandler) DeleteUser(c *gin.Context) {
-	id := c.Param("id")
+	id := c.MustGet("userID").(string)
 	if err := h.Service.DeleteUser(id); err != nil {
 		c.JSON(http.StatusInternalServerError, model.ErrorResponse{Message: "삭제 실패", Detail: err.Error(), Status: 500})
 		return

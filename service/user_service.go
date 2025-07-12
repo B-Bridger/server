@@ -102,11 +102,16 @@ func (s *UserService) Authenticate(email, password string) (*model.User, string,
 		return nil, "", errors.New("JWT 비밀 키가 설정되지 않았습니다")
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userID": user.UserID,
-		"email":  user.Email,
-		"exp":    time.Now().Add(time.Hour * 24).Unix(),
-	})
+	claims := model.BridgerClaims{
+		UserID: user.UserID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(30 * time.Minute)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    "Bridger",
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
