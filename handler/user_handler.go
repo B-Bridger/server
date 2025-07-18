@@ -83,7 +83,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param user body model.User true "수정할 사용자 정보"
-// @Success 200 {object} model.User
+// @Success 200 {object} model.UserResponse
 // @Failure 400 {object} model.ErrorResponse
 // @Failure 500 {object} model.ErrorResponse
 // @Router /users [put]
