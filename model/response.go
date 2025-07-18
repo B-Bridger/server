@@ -24,3 +24,15 @@ type TokenResponse struct {
 	User    User   `json:"user"`
 	Token   string `json:"token"`
 }
+
+type ChatRoomResponse struct {
+	Status   int      `json:"status"`
+	Message  string   `json:"message"`
+	ChatRoom ChatRoom `json:"chatRoom"`
+}
+
+type ChatRoomsResponse struct {
+	Status    int        `json:"status"`
+	Message   string     `json:"message"`
+	ChatRooms []ChatRoom `json:"chatRooms"`
+}

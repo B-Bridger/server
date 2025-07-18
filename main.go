@@ -22,8 +22,6 @@ import (
 	"github.com/B-Bridger/server/model"
 	"github.com/B-Bridger/server/repository/mariaDB"
 	"github.com/B-Bridger/server/service"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -33,13 +31,16 @@ func main() {
 	}
 
 	_ = db.AutoMigrate(&model.User{})
+	_ = db.AutoMigrate(&model.ChatRoom{})
 
 	userRepo := &mariaDB.MariaDBUserRepository{DB: db}
 	userService := &service.UserService{Repo: userRepo}
 	userHandler := &handler.UserHandler{Service: userService}
+	chatRoomRepo := &mariaDB.MariaDBChatRoomRepository{DB: db}
+	chatRoomService := &service.ChatRoomService{Repo: chatRoomRepo}
+	chatRoomHandler := &handler.ChatRoomHandler{Service: chatRoomService}
 
-	r := SetupRouter(userHandler)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r := SetupRouter(userHandler, chatRoomHandler)
 
 	port := os.Getenv("SERVER_PORT")
 	if port == "" {
