@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/B-Bridger/server/handler"
 	"github.com/B-Bridger/server/middleware"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -10,6 +11,7 @@ import (
 
 func SetupRouter(userHandler *handler.UserHandler, chatRoomHandler *handler.ChatRoomHandler) *gin.Engine {
 	r := gin.Default()
+	r.Use(cors.Default())
 
 	// 사용자 관련 라우팅 설정
 	authRequiredUser := r.Group("/users", middleware.AuthMiddleware())
